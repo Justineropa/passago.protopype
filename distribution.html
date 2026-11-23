@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-
-<html lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
-<meta content="mobile_tab" name="shell-type"/>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
+<meta content="mobile_tab" name="shell-type">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script id="tailwind-config">
     tailwind.config = {
@@ -76,13 +74,11 @@
 <!-- App Bar -->
 <div class="h-14 px-4 flex items-center justify-between">
 <div class="flex items-center gap-2.5">
-<img alt="PassaGo" class="h-7 w-auto object-contain shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDdoGt7CcORbfJk7ixbdjEvLU-gj1qy_zdiR9068I3nhZQlOjU1bqW2XJ9brdGBbfR69E0NLHwW3luYoVUgmh-8nJvnph-wMTNVOBHpF6If-9_blych-pKayBge_n57NOjSBwbZ0550sEhYwy-oQudsqVwtJjTgkNBELR-bxh6usV7INi5C76gEdzAvhsfYw6-GvJIUS9jPPTbhxljUOr_9tws0RXPkEpCaA3cSGiSzfAgq8qPjoFR"/>
+<img alt="PassaGo" class="h-7 w-auto object-contain shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDdoGt7CcORbfJk7ixbdjEvLU-gj1qy_zdiR9068I3nhZQlOjU1bqW2XJ9brdGBbfR69E0NLHwW3luYoVUgmh-8nJvnph-wMTNVOBHpF6If-9_blych-pKayBge_n57NOjSBwbZ0550sEhYwy-oQudsqVwtJjTgkNBELR-bxh6usV7INi5C76gEdzAvhsfYw6-GvJIUS9jPPTbhxljUOr_9tws0RXPkEpCaA3cSGiSzfAgq8qPjoFR">
 <h1 class="text-[19px] font-bold tracking-tight text-brand-charcoal">Passenger Distribution</h1>
 </div>
 <div class="flex items-center gap-1">
-<button aria-label="Notifications" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-brand-charcoal">
-<span class="material-symbols-outlined text-[22px]">notifications</span>
-</button>
+<a aria-label="Notifications" href="notifications.html" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-brand-charcoal"><span class="material-symbols-outlined text-[22px]">notifications</span></a>
 <button aria-label="Profile" class="w-9 h-9 rounded-full bg-brand-plum flex items-center justify-center text-white font-medium hover:opacity-95 transition-opacity">
 <span class="material-symbols-outlined text-[19px]">person</span>
 </button>
@@ -98,7 +94,7 @@
 </div>
 <!-- Active Trip Offer Card -->
 <div class="px-4 py-2">
-<section class="bg-white rounded-[14px] p-4 border-2 border-brand-magenta shadow-sm transition-all duration-300 reveal-on-scroll" id="assignmentAlert" style="opacity: 0.5;">
+<section class="bg-white rounded-[14px] p-4 border-2 border-brand-magenta shadow-sm transition-all duration-300 reveal-on-scroll is-visible" id="assignmentAlert" style="opacity: 0.5;">
 <!-- Card Header -->
 <div class="flex items-center justify-between">
 <div class="flex items-center gap-1.5 text-brand-magenta font-semibold text-xs tracking-wide uppercase">
@@ -151,7 +147,7 @@
 <!-- Divider -->
 <div class="h-[1px] bg-brand-lightBorder my-3 mx-4"></div>
 <!-- Dispatch Queue Section -->
-<section class="px-4 reveal-on-scroll" style="transition-delay: 50ms;">
+<section class="px-4 reveal-on-scroll is-visible" style="transition-delay: 50ms;">
 <div class="flex items-center justify-between">
 <h3 class="text-base font-bold text-brand-charcoal">TODA dispatch queue</h3>
 <span class="text-xs font-medium text-brand-magenta">Fair-share priority</span>
@@ -169,9 +165,9 @@
         </button>
 </div>
 <!-- Queue List -->
-<div class="mt-3 p-3 bg-white rounded-[10px] border border-brand-lightBorder shadow-xs reveal-on-scroll" style="transition-delay: 80ms;"><div class="flex items-center justify-between mb-2"><div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-brand-magenta animate-pulse"></span><span class="text-xs font-semibold text-brand-charcoal">Syncing Terminal Arrivals</span></div><span class="text-[11px] text-brand-muted font-medium flex items-center gap-1"><span class="material-symbols-outlined text-[13px] animate-spin">sync</span> Live update</span></div><div class="space-y-2"><div class="flex items-center justify-between gap-3"><div class="flex items-center gap-2 flex-1"><div class="w-7 h-7 rounded-full shimmer-skeleton"></div><div class="flex-1 space-y-1.5"><div class="h-3 w-28 rounded shimmer-skeleton"></div><div class="h-2.5 w-16 rounded shimmer-skeleton"></div></div></div><div class="h-6 w-16 rounded-full shimmer-skeleton"></div></div><div class="flex items-center justify-between gap-3 pt-1"><div class="flex items-center gap-2 flex-1"><div class="w-7 h-7 rounded-full shimmer-skeleton"></div><div class="flex-1 space-y-1.5"><div class="h-3 w-36 rounded shimmer-skeleton"></div><div class="h-2.5 w-20 rounded shimmer-skeleton"></div></div></div><div class="h-4 w-12 rounded shimmer-skeleton"></div></div></div></div><div class="mt-3 divide-y divide-brand-lightBorder border-y border-brand-lightBorder" id="queueList">
+<div class="mt-3 p-3 bg-white rounded-[10px] border border-brand-lightBorder shadow-xs reveal-on-scroll is-visible" style="transition-delay: 80ms;"><div class="flex items-center justify-between mb-2"><div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-brand-magenta animate-pulse"></span><span class="text-xs font-semibold text-brand-charcoal">Syncing Terminal Arrivals</span></div><span class="text-[11px] text-brand-muted font-medium flex items-center gap-1"><span class="material-symbols-outlined text-[13px] animate-spin">sync</span> Live update</span></div><div class="space-y-2"><div class="flex items-center justify-between gap-3"><div class="flex items-center gap-2 flex-1"><div class="w-7 h-7 rounded-full shimmer-skeleton"></div><div class="flex-1 space-y-1.5"><div class="h-3 w-28 rounded shimmer-skeleton"></div><div class="h-2.5 w-16 rounded shimmer-skeleton"></div></div></div><div class="h-6 w-16 rounded-full shimmer-skeleton"></div></div><div class="flex items-center justify-between gap-3 pt-1"><div class="flex items-center gap-2 flex-1"><div class="w-7 h-7 rounded-full shimmer-skeleton"></div><div class="flex-1 space-y-1.5"><div class="h-3 w-36 rounded shimmer-skeleton"></div><div class="h-2.5 w-20 rounded shimmer-skeleton"></div></div></div><div class="h-4 w-12 rounded shimmer-skeleton"></div></div></div></div><div class="mt-3 divide-y divide-brand-lightBorder border-y border-brand-lightBorder" id="queueList">
 <!-- Driver 01 -->
-<div class="py-2.5 flex items-center justify-between reveal-on-scroll" style="transition-delay: 100ms;">
+<div class="py-2.5 flex items-center justify-between reveal-on-scroll is-visible" style="transition-delay: 100ms;">
 <div>
 <div class="flex items-center gap-1.5">
 <span class="text-sm font-semibold text-brand-charcoal">#01 • Jun Bautista</span>
@@ -185,7 +181,7 @@
           </span>
 </div>
 <!-- Driver 02 -->
-<div class="py-2.5 flex items-center justify-between reveal-on-scroll" style="transition-delay: 150ms;">
+<div class="py-2.5 flex items-center justify-between reveal-on-scroll is-visible" style="transition-delay: 150ms;">
 <div>
 <div class="flex items-center gap-1.5">
 <span class="text-sm font-semibold text-brand-charcoal">#02 • Arnel Santos</span>
@@ -196,7 +192,7 @@
 <span class="text-xs font-medium text-brand-muted">Wait ~18m</span>
 </div>
 <!-- Driver 03 (YOU) -->
-<div class="py-2.5 px-3 -mx-3 bg-brand-pinkSoft/60 rounded-[10px] my-1 border-l-4 border-brand-magenta flex items-center justify-between reveal-on-scroll" style="transition-delay: 200ms;">
+<div class="py-2.5 px-3 -mx-3 bg-brand-pinkSoft/60 rounded-[10px] my-1 border-l-4 border-brand-magenta flex items-center justify-between reveal-on-scroll is-visible" style="transition-delay: 200ms;">
 <div>
 <div class="flex items-center gap-1.5 flex-wrap">
 <span class="text-sm font-bold text-brand-charcoal">#03 • Ramon Dela Cruz (YOU)</span>
@@ -213,7 +209,7 @@
 </div>
 </div>
 <!-- Driver 04 -->
-<div class="py-2.5 flex items-center justify-between reveal-on-scroll" style="transition-delay: 250ms;">
+<div class="py-2.5 flex items-center justify-between reveal-on-scroll is-visible" style="transition-delay: 250ms;">
 <div>
 <div class="flex items-center gap-1.5">
 <span class="text-sm font-semibold text-brand-charcoal">#04 • Edwin Reyes</span>
@@ -224,7 +220,7 @@
 <span class="text-xs font-medium text-brand-muted">Wait ~9m</span>
 </div>
 <!-- Driver 05 -->
-<div class="py-2.5 flex items-center justify-between reveal-on-scroll" style="transition-delay: 300ms;">
+<div class="py-2.5 flex items-center justify-between reveal-on-scroll is-visible" style="transition-delay: 300ms;">
 <div>
 <div class="flex items-center gap-1.5">
 <span class="text-sm font-semibold text-brand-charcoal">#05 • Mario Lopez</span>
@@ -234,10 +230,10 @@
 </div>
 <span class="text-xs font-medium text-brand-muted">Wait ~6m</span>
 </div>
-<div class="py-2.5 flex items-center justify-between opacity-75 reveal-on-scroll" style="transition-delay: 350ms;"><div class="space-y-1.5"><div class="flex items-center gap-2"><div class="h-4 w-28 rounded shimmer-skeleton"></div><div class="h-3 w-14 rounded shimmer-skeleton"></div></div><div class="h-3 w-20 rounded shimmer-skeleton"></div></div><div class="h-6 w-16 rounded-full shimmer-skeleton"></div></div><div class="py-2.5 flex items-center justify-between opacity-60 reveal-on-scroll" style="transition-delay: 400ms;"><div class="space-y-1.5"><div class="flex items-center gap-2"><div class="h-4 w-32 rounded shimmer-skeleton"></div><div class="h-3 w-12 rounded shimmer-skeleton"></div></div><div class="h-3 w-24 rounded shimmer-skeleton"></div></div><div class="h-5 w-14 rounded shimmer-skeleton"></div></div></div>
+<div class="py-2.5 flex items-center justify-between opacity-75 reveal-on-scroll is-visible" style="transition-delay: 350ms;"><div class="space-y-1.5"><div class="flex items-center gap-2"><div class="h-4 w-28 rounded shimmer-skeleton"></div><div class="h-3 w-14 rounded shimmer-skeleton"></div></div><div class="h-3 w-20 rounded shimmer-skeleton"></div></div><div class="h-6 w-16 rounded-full shimmer-skeleton"></div></div><div class="py-2.5 flex items-center justify-between opacity-60 reveal-on-scroll is-visible" style="transition-delay: 400ms;"><div class="space-y-1.5"><div class="flex items-center gap-2"><div class="h-4 w-32 rounded shimmer-skeleton"></div><div class="h-3 w-12 rounded shimmer-skeleton"></div></div><div class="h-3 w-24 rounded shimmer-skeleton"></div></div><div class="h-5 w-14 rounded shimmer-skeleton"></div></div></div>
 </section>
 <!-- Terminal Demand Section -->
-<section class="px-4 mt-5 reveal-on-scroll" style="transition-delay: 100ms;">
+<section class="px-4 mt-5 reveal-on-scroll is-visible" style="transition-delay: 100ms;">
 <div class="flex items-center justify-between mb-2">
 <h3 class="text-base font-bold text-brand-charcoal">Terminal demand</h3>
 <span class="text-xs font-medium text-brand-muted">Live turnstile</span>
@@ -290,7 +286,7 @@
 </main>
 <!-- Modern Android Bottom Navigation Bar -->
 <nav class="fixed bottom-0 inset-x-0 z-50 bg-white border-t border-brand-lightBorder pb-safe">
-<div class="grid grid-cols-4 h-16 w-full max-w-md mx-auto"><a class="nav-tab-item flex flex-col items-center justify-center text-brand-muted hover:text-brand-charcoal transition-colors" data-path="driver-dashboard" href="#"><span class="material-symbols-outlined text-[22px]">dashboard</span><span class="text-[11px] font-medium mt-0.5">Dashboard</span></a><a aria-current="page" class="nav-tab-item flex flex-col items-center justify-center text-brand-magenta transition-colors relative" data-path="passenger-distribution" href="#"><span class="material-symbols-outlined text-[22px] font-semibold">hub</span><span class="text-[11px] font-bold mt-0.5">Distribution</span></a><a class="nav-tab-item flex flex-col items-center justify-center text-brand-muted hover:text-brand-charcoal transition-colors" data-path="trip-records" href="#"><span class="material-symbols-outlined text-[22px]">receipt_long</span><span class="text-[11px] font-medium mt-0.5">Trips</span></a><a class="nav-tab-item flex flex-col items-center justify-center text-brand-muted hover:text-brand-charcoal transition-colors" data-path="driver-profile" href="#"><span class="material-symbols-outlined text-[22px]">account_circle</span><span class="text-[11px] font-medium mt-0.5">Profile</span></a></div>
+<div class="grid grid-cols-4 h-16 w-full max-w-md mx-auto"><a class="nav-tab-item flex flex-col items-center justify-center text-brand-muted hover:text-brand-charcoal transition-colors" data-path="driver-dashboard" href="dashboard.html"><span class="material-symbols-outlined text-[22px]">dashboard</span><span class="text-[11px] font-medium mt-0.5">Dashboard</span></a><a aria-current="page" class="nav-tab-item flex flex-col items-center justify-center text-brand-magenta transition-colors relative" data-path="passenger-distribution" href="distribution.html"><span class="material-symbols-outlined text-[22px] font-semibold">hub</span><span class="text-[11px] font-bold mt-0.5">Distribution</span></a><a class="nav-tab-item flex flex-col items-center justify-center text-brand-muted hover:text-brand-charcoal transition-colors" data-path="trip-records" href="trips.html"><span class="material-symbols-outlined text-[22px]">receipt_long</span><span class="text-[11px] font-medium mt-0.5">Trips</span></a><a class="nav-tab-item flex flex-col items-center justify-center text-brand-muted hover:text-brand-charcoal transition-colors" data-path="driver-profile" href="#"><span class="material-symbols-outlined text-[22px]">account_circle</span><span class="text-[11px] font-medium mt-0.5">Profile</span></a></div>
 </nav>
 <!-- Micro-interactions & Scroll Animation Script -->
 <script>
@@ -394,4 +390,6 @@
       }
     }
   </script>
+
+
 </body></html>
