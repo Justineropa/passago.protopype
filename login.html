@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-
-<html lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
-<meta content="mobile_stack" name="shell-type"/>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
+<meta content="mobile_stack" name="shell-type">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
 <style>
     @layer base {
       html, body {
@@ -102,9 +100,7 @@
 <!-- App Bar with Navigation -->
 <div class="h-14 px-4 flex items-center justify-between border-b border-border-subtle/40">
 <div class="flex items-center gap-2">
-<button aria-label="Navigate back" class="w-10 h-10 -ml-1 rounded-full flex items-center justify-center text-charcoal active:bg-black/5 transition-colors" onclick="history.back()">
-<span class="material-symbols-outlined text-[24px]">arrow_back</span>
-</button>
+<a aria-label="Navigate back" href="index.html" class="w-10 h-10 -ml-1 rounded-full flex items-center justify-center text-charcoal active:bg-black/5 transition-colors"><span class="material-symbols-outlined text-[24px]">arrow_back</span></a>
 <h1 class="text-[19px] font-medium text-charcoal tracking-tight">Driver login</h1>
 </div>
 <div class="flex items-center">
@@ -121,7 +117,7 @@
 <div class="flex flex-col">
 <!-- Title & Subtitle -->
 <div class="mb-6 animate-entrance delay-brand">
-<div class="mb-4 flex items-center"><img alt="PassaGo Logo" class="h-10 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBq7J7FJoDN4cDevSfOrQ4SsEGLkrMfKZK_rVMfuX8tr0NlDqGncNuyhKXdBLCQJ1JS6aM8qRknTdHXqhrA-5sCeMbMhhYlY1kkFIMhrbP5tmxDkIHVOpss38CIHntlbcMrbqLnc9hxqHy2R46aoxFlFkr709pBKbbhb0wJXh-APdBJPUNF5V2w3pzR9bnGIeCz_wbTHiWhgnBp41sZnJ2tIeEB9suwyRBEUbX19Y4JKHPD32Kz5OeX"/></div><h2 class="text-[26px] leading-[32px] font-bold text-charcoal tracking-tight mb-2">Sign in to PassaGo</h2>
+<div class="mb-4 flex items-center"><img alt="PassaGo Logo" class="h-10 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBq7J7FJoDN4cDevSfOrQ4SsEGLkrMfKZK_rVMfuX8tr0NlDqGncNuyhKXdBLCQJ1JS6aM8qRknTdHXqhrA-5sCeMbMhhYlY1kkFIMhrbP5tmxDkIHVOpss38CIHntlbcMrbqLnc9hxqHy2R46aoxFlFkr709pBKbbhb0wJXh-APdBJPUNF5V2w3pzR9bnGIeCz_wbTHiWhgnBp41sZnJ2tIeEB9suwyRBEUbX19Y4JKHPD32Kz5OeX"></div><h2 class="text-[26px] leading-[32px] font-bold text-charcoal tracking-tight mb-2">Sign in to PassaGo</h2>
 <p class="text-[15px] leading-[22px] text-charcoal-body">Enter your TODA-registered Driver ID and 6-digit security PIN to begin your shift.</p>
 </div>
 <!-- Form Stack -->
@@ -130,7 +126,7 @@
 <div class="flex flex-col gap-1.5 animate-entrance delay-driver-id">
 <label class="text-[14px] font-medium text-charcoal" for="driver-id">Driver ID</label>
 <div class="relative flex items-center">
-<input class="w-full h-13 px-4 text-[16px] text-charcoal bg-white rounded-android border border-border-input placeholder:text-charcoal-muted/60 focus:outline-none focus:border-magenta-accent focus:ring-2 focus:ring-magenta-accent/20 transition-all shadow-xs" id="driver-id" type="text" value="TD-04927"/>
+<input class="w-full h-13 px-4 text-[16px] text-charcoal bg-white rounded-android border border-border-input placeholder:text-charcoal-muted/60 focus:outline-none focus:border-magenta-accent focus:ring-2 focus:ring-magenta-accent/20 transition-all shadow-xs" id="driver-id" type="text" value="TD-04927">
 <div class="absolute right-3.5 flex items-center text-magenta-accent pointer-events-none">
 <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
 </div>
@@ -148,7 +144,7 @@
 <label class="text-[14px] font-medium text-charcoal" for="security-pin">6-digit security PIN</label>
 </div>
 <div class="relative flex items-center">
-<input class="w-full h-13 pl-4 pr-16 text-[18px] tracking-[0.25em] text-charcoal bg-white rounded-android border border-border-input placeholder:text-charcoal-muted/60 focus:outline-none focus:border-magenta-accent focus:ring-2 focus:ring-magenta-accent/20 transition-all shadow-xs" id="security-pin" inputmode="numeric" maxlength="6" pattern="[0-9]*" placeholder="••••••" type="password" value="123456"/>
+<input class="w-full h-13 pl-4 pr-16 text-[18px] tracking-[0.25em] text-charcoal bg-white rounded-android border border-border-input placeholder:text-charcoal-muted/60 focus:outline-none focus:border-magenta-accent focus:ring-2 focus:ring-magenta-accent/20 transition-all shadow-xs" id="security-pin" inputmode="numeric" maxlength="6" pattern="[0-9]*" placeholder="••••••" type="password" value="123456">
 <button aria-label="Toggle PIN visibility" class="absolute right-0 h-13 px-4 flex items-center justify-center text-[13px] font-medium text-charcoal-body hover:text-charcoal active:opacity-70 transition-colors select-none" id="toggle-pin-btn" type="button">
                 Show
               </button>
@@ -157,7 +153,7 @@
 <!-- Helpers: Remember checkbox & Forgot PIN -->
 <div class="flex items-center justify-between pt-1 animate-entrance delay-helpers">
 <label class="flex items-center gap-2.5 cursor-pointer select-none">
-<input checked="" class="w-[18px] h-[18px] rounded text-magenta-accent border-border-input focus:ring-magenta-accent/30 focus:ring-offset-0 cursor-pointer accent-[#AF0088]" type="checkbox"/>
+<input checked="" class="w-[18px] h-[18px] rounded text-magenta-accent border-border-input focus:ring-magenta-accent/30 focus:ring-offset-0 cursor-pointer accent-[#AF0088]" type="checkbox">
 <span class="text-[14px] text-charcoal-body font-normal">Remember this device</span>
 </label>
 <button class="text-[14px] font-medium text-magenta-accent hover:underline active:opacity-75 transition-opacity" type="button">
@@ -166,12 +162,8 @@
 </div>
 <!-- Action Buttons -->
 <div class="flex flex-col gap-3 pt-3 animate-entrance delay-buttons">
-<button class="w-full h-13 rounded-android-lg bg-primary text-white text-[15px] font-medium tracking-wide flex items-center justify-center transition-all duration-150 active:scale-[0.99] active:bg-primary-focus shadow-xs" id="login-btn" type="button">
-              Log in
-            </button>
-<button class="w-full h-13 rounded-android-lg bg-white border border-border-input text-charcoal text-[15px] font-medium flex items-center justify-center transition-all duration-150 hover:bg-surface-low active:bg-black/5 active:scale-[0.99]" type="button">
-              Log in with mobile number (SMS OTP)
-            </button>
+<a href="schedule.html" id="login-btn" class="w-full h-13 rounded-android-lg bg-primary text-white text-[15px] font-medium tracking-wide flex items-center justify-center transition-all duration-150 active:scale-[0.99] active:bg-primary-focus shadow-xs">Log in</a>
+<a href="schedule.html" class="w-full h-13 rounded-android-lg bg-white border border-border-input text-charcoal text-[15px] font-medium flex items-center justify-center transition-all duration-150 hover:bg-surface-low active:bg-black/5 active:scale-[0.99]">Log in with mobile number (SMS OTP)</a>
 </div>
 </form>
 </div>
@@ -225,4 +217,6 @@
 </main>
 <grammarly-desktop-integration data-grammarly-shadow-root="true" style="visibility: visible !important;"></grammarly-desktop-integration>
 <grammarly-desktop-integration data-grammarly-shadow-root="true" style="visibility: visible !important;"></grammarly-desktop-integration>
+
+
 </body></html>
