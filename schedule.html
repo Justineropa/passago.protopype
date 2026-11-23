@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-
-<html lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
-<meta content="mobile_stack" name="shell-type"/>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
+<meta content="mobile_stack" name="shell-type">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
 <style>
     @layer base {
       html, body {
@@ -84,9 +82,7 @@
 <!-- Top Action Bar -->
 <div class="h-14 px-4 flex items-center justify-between">
 <div class="flex items-center gap-2">
-<button aria-label="Go back" class="w-10 h-10 -ml-2 rounded-full flex items-center justify-center text-neutral-dark hover:bg-neutral-100 active:bg-neutral-200 transition-colors" onclick="history.back()">
-<span class="material-symbols-outlined text-[24px]">arrow_back</span>
-</button>
+<a href="login.html" aria-label="Go back" class="w-10 h-10 -ml-2 rounded-full flex items-center justify-center text-neutral-dark hover:bg-neutral-100 active:bg-neutral-200 transition-colors"><span class="material-symbols-outlined text-[24px]">arrow_back</span></a>
 <span class="text-[19px] text-neutral-dark font-medium tracking-tight">Schedule selection</span>
 </div>
 <button aria-label="Driver Profile" class="w-9 h-9 rounded-full bg-[#180011] flex items-center justify-center active:scale-95 transition-transform shadow-sm">
@@ -199,9 +195,7 @@
 </div>
 <!-- Action Footer -->
 <div class="flex flex-col space-y-2 pt-2 animate-entrance stagger-6">
-<button class="w-full h-12 bg-plum-primary text-white rounded-xl text-sm font-semibold tracking-wide flex items-center justify-center shadow-md active:bg-plum-dark active:scale-[0.99] transition-all" id="submit-btn" type="button">
-          Start AM shift
-        </button>
+<a href="dashboard.html" class="w-full h-12 bg-plum-primary text-white rounded-xl text-sm font-semibold tracking-wide flex items-center justify-center shadow-md active:bg-plum-dark active:scale-[0.99] transition-all" id="submit-btn">Start AM shift</a>
 <p class="text-[11px] text-neutral-muted text-center tracking-normal">
           You may adjust your shift up to 30 minutes before departure.
         </p>
@@ -245,4 +239,6 @@
       }
     }
   </script>
+
+
 </body></html>
