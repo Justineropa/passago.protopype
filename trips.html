@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-
-<html lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
-<meta content="mobile_tab" name="shell-type"/>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
+<meta content="mobile_tab" name="shell-type">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script id="tailwind-config">
     tailwind.config = {
@@ -111,13 +109,11 @@
 <!-- PassaGo Header -->
 <div class="h-14 px-4 flex items-center justify-between">
 <div class="flex items-center gap-2.5">
-<img alt="PassaGo" class="h-7 w-auto object-contain shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkxgA5Qtjiepw1szWobPOpuqcGlw-3SAnZmFyGJZL6J_GNDvKX-w1fZXIOZGAgIBPWlGil_Jx0zxKMHUkbE8Os66VzhJJ0sdTAD_Y2k0J5X95VZ-GftAkfxzB20RvoU7I74qvCtePxEcSel5_DUEH4v_XaCqsD1qt92Tz4Jxr-jqqM1clDtmdaXYIr52zQpirx7u3kVVbFmLr-q46LMh1pSyOvZqySEKxbnyJH98bXoAynnrIbugSP"/>
+<img alt="PassaGo" class="h-7 w-auto object-contain shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkxgA5Qtjiepw1szWobPOpuqcGlw-3SAnZmFyGJZL6J_GNDvKX-w1fZXIOZGAgIBPWlGil_Jx0zxKMHUkbE8Os66VzhJJ0sdTAD_Y2k0J5X95VZ-GftAkfxzB20RvoU7I74qvCtePxEcSel5_DUEH4v_XaCqsD1qt92Tz4Jxr-jqqM1clDtmdaXYIr52zQpirx7u3kVVbFmLr-q46LMh1pSyOvZqySEKxbnyJH98bXoAynnrIbugSP">
 <h1 class="text-[19px] font-medium text-charcoal tracking-normal">Trip Records</h1>
 </div>
 <div class="flex items-center gap-1">
-<button aria-label="Notifications" class="w-10 h-10 rounded-full flex items-center justify-center text-charcoal-muted active:bg-surface-subtle transition-colors">
-<span class="material-symbols-outlined text-[21px]">notifications</span>
-</button>
+<a aria-label="Notifications" href="notifications.html" class="w-10 h-10 rounded-full flex items-center justify-center text-charcoal-muted active:bg-surface-subtle transition-colors"><span class="material-symbols-outlined text-[21px]">notifications</span></a>
 <button aria-label="Account Profile" class="w-9 h-9 ml-1 rounded-full bg-plum flex items-center justify-center text-white active:scale-95 transition-transform">
 <span class="material-symbols-outlined text-[18px]">person</span>
 </button>
@@ -128,7 +124,7 @@
 <main class="flex-1 flex flex-col relative w-full pt-[82px] pb-[76px]">
 <div class="flex flex-col w-full">
 <!-- Screen Header with Export Action -->
-<div class="px-4 pt-3 pb-2 flex items-center justify-between reveal-on-scroll">
+<div class="px-4 pt-3 pb-2 flex items-center justify-between reveal-on-scroll is-visible">
 <div>
 <h2 class="text-[24px] font-bold text-plum tracking-tight">Trip records</h2>
 <p class="text-[13px] text-subtle-gray mt-0.5">Verified daily operator ledger &amp; queue audit</p>
@@ -139,7 +135,7 @@
 </button>
 </div>
 <!-- Time Filter Tabs (Today, This week, This month) -->
-<div class="px-4 py-2 flex items-center gap-2 overflow-x-auto scrollbar-none reveal-on-scroll" id="timeFilters" style="transition-delay: 40ms;"><button class="time-pill h-[34px] px-4 rounded-full bg-plum text-white text-[13px] font-medium tracking-tight flex items-center justify-center whitespace-nowrap shadow-sm transition-all duration-200 ease-out active:scale-95" data-filter="today" type="button">
+<div class="px-4 py-2 flex items-center gap-2 overflow-x-auto scrollbar-none reveal-on-scroll is-visible" id="timeFilters" style="transition-delay: 40ms;"><button class="time-pill h-[34px] px-4 rounded-full bg-plum text-white text-[13px] font-medium tracking-tight flex items-center justify-center whitespace-nowrap shadow-sm transition-all duration-200 ease-out active:scale-95" data-filter="today" type="button">
           Today
         </button>
 <button class="time-pill h-[34px] px-4 rounded-full bg-surface-subtle border border-divider text-charcoal-muted text-[13px] font-medium tracking-tight flex items-center justify-center whitespace-nowrap active:bg-divider transition-all duration-200 ease-out active:scale-95" data-filter="week" type="button">
@@ -149,7 +145,7 @@
           This month
         </button></div>
 <!-- Shift Filter Chips (All shifts, AM shift, PM shift) -->
-<div class="px-4 py-2 flex items-center gap-2 border-b border-divider pb-3.5 reveal-on-scroll" id="shiftFilters" style="transition-delay: 80ms;">
+<div class="px-4 py-2 flex items-center gap-2 border-b border-divider pb-3.5 reveal-on-scroll is-visible" id="shiftFilters" style="transition-delay: 80ms;">
 <button class="shift-chip h-7 px-3 rounded-full bg-white border border-divider text-charcoal-muted text-[12px] font-medium flex items-center whitespace-nowrap active:bg-surface-subtle transition-all" data-shift="all" type="button">
           All shifts
         </button>
@@ -162,7 +158,7 @@
         </button>
 </div>
 <!-- Clean Summary Metrics Row -->
-<div class="px-4 mt-3.5 reveal-on-scroll" style="transition-delay: 100ms;">
+<div class="px-4 mt-3.5 reveal-on-scroll is-visible" style="transition-delay: 100ms;">
 <div class="w-full rounded-xl border border-divider bg-white grid grid-cols-3 divide-x divide-divider shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
 <!-- Gross fares -->
 <div class="p-3 flex flex-col justify-between">
@@ -194,7 +190,7 @@
 </div>
 </div>
 <!-- Fair Turn Balance Gauge -->
-<div class="px-4 mt-3 reveal-on-scroll" style="transition-delay: 140ms;">
+<div class="px-4 mt-3 reveal-on-scroll is-visible" style="transition-delay: 140ms;">
 <div class="p-3.5 rounded-xl border border-divider bg-surface-subtle flex flex-col gap-2">
 <div class="flex items-center justify-between text-[13px]">
 <div class="flex items-center gap-1.5 font-medium text-charcoal">
@@ -227,7 +223,7 @@
 <!-- Modern Trip Record Ledger -->
 <div class="flex flex-col">
 <!-- Date Group Header -->
-<div class="px-4 py-2 bg-surface-subtle border-y border-divider flex items-center justify-between reveal-on-scroll">
+<div class="px-4 py-2 bg-surface-subtle border-y border-divider flex items-center justify-between reveal-on-scroll is-visible">
 <div class="flex items-center gap-2">
 <span class="w-2 h-2 rounded-full bg-bright-pink"></span>
 <span class="text-[13px] font-medium text-charcoal">Today, Tuesday 14 May</span>
@@ -237,7 +233,7 @@
 <!-- Ledger Rows (Subtle 1px Dividers, No Floating Cards) -->
 <div class="divide-y divide-divider">
 <!-- Row 1: 09:42 AM -->
-<div class="px-4 py-3.5 flex items-center justify-between android-touch-press transition-colors cursor-pointer reveal-on-scroll" style="transition-delay: 40ms;">
+<div class="px-4 py-3.5 flex items-center justify-between android-touch-press transition-colors cursor-pointer reveal-on-scroll is-visible" style="transition-delay: 40ms;">
 <div class="flex flex-col min-w-0 pr-3">
 <div class="flex items-center gap-1.5 flex-wrap">
 <span class="text-[12px] font-semibold text-charcoal-muted">09:42 AM</span>
@@ -258,7 +254,7 @@
 </div>
 </div>
 <!-- Row 2: 08:51 AM -->
-<div class="px-4 py-3.5 flex items-center justify-between android-touch-press transition-colors cursor-pointer reveal-on-scroll" style="transition-delay: 80ms;">
+<div class="px-4 py-3.5 flex items-center justify-between android-touch-press transition-colors cursor-pointer reveal-on-scroll is-visible" style="transition-delay: 80ms;">
 <div class="flex flex-col min-w-0 pr-3">
 <div class="flex items-center gap-1.5 flex-wrap">
 <span class="text-[12px] font-semibold text-charcoal-muted">08:51 AM</span>
@@ -279,7 +275,7 @@
 </div>
 </div>
 <!-- Row 3: 08:05 AM (Voided) -->
-<div class="px-4 py-3.5 flex items-center justify-between bg-surface-subtle/50 android-touch-press transition-colors cursor-pointer reveal-on-scroll" style="transition-delay: 120ms;">
+<div class="px-4 py-3.5 flex items-center justify-between bg-surface-subtle/50 android-touch-press transition-colors cursor-pointer reveal-on-scroll is-visible" style="transition-delay: 120ms;">
 <div class="flex flex-col min-w-0 pr-3">
 <div class="flex items-center gap-1.5 flex-wrap">
 <span class="text-[12px] font-medium text-subtle-gray">08:05 AM</span>
@@ -297,7 +293,7 @@
 </div>
 </div>
 <!-- Row 4: 07:18 AM -->
-<div class="px-4 py-3.5 flex items-center justify-between android-touch-press transition-colors cursor-pointer reveal-on-scroll" style="transition-delay: 160ms;">
+<div class="px-4 py-3.5 flex items-center justify-between android-touch-press transition-colors cursor-pointer reveal-on-scroll is-visible" style="transition-delay: 160ms;">
 <div class="flex flex-col min-w-0 pr-3">
 <div class="flex items-center gap-1.5 flex-wrap">
 <span class="text-[12px] font-semibold text-charcoal-muted">07:18 AM</span>
@@ -317,7 +313,7 @@
 <span class="mt-1 px-2 py-0.5 rounded text-[10px] font-semibold tracking-wider uppercase bg-[#E7F6EC] text-[#0C7338]">PAID</span>
 </div>
 </div>
-<div class="px-4 py-3 bg-surface-subtle/40 border-t border-divider flex items-center justify-between text-subtle-gray text-[11px] font-medium reveal-on-scroll"><div class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-subtle-gray/60 animate-pulse"></span><span>Loading previous shifts...</span></div><span class="text-[10px] uppercase tracking-wider text-subtle-gray/70">Syncing</span></div><div class="px-4 py-3.5 flex items-center justify-between opacity-90 reveal-on-scroll" style="transition-delay: 40ms;">
+<div class="px-4 py-3 bg-surface-subtle/40 border-t border-divider flex items-center justify-between text-subtle-gray text-[11px] font-medium reveal-on-scroll is-visible"><div class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-subtle-gray/60 animate-pulse"></span><span>Loading previous shifts...</span></div><span class="text-[10px] uppercase tracking-wider text-subtle-gray/70">Syncing</span></div><div class="px-4 py-3.5 flex items-center justify-between opacity-90 reveal-on-scroll is-visible" style="transition-delay: 40ms;">
 <div class="flex flex-col min-w-0 pr-3 flex-1">
 <div class="flex items-center gap-1.5">
 <div class="h-3.5 w-14 rounded skeleton-shimmer"></div>
@@ -336,7 +332,7 @@
 <div class="h-4 w-14 rounded skeleton-shimmer"></div>
 <div class="h-4 w-11 rounded skeleton-shimmer"></div>
 </div>
-</div><div class="px-4 py-3.5 flex items-center justify-between opacity-50 reveal-on-scroll" style="transition-delay: 80ms;">
+</div><div class="px-4 py-3.5 flex items-center justify-between opacity-50 reveal-on-scroll is-visible" style="transition-delay: 80ms;">
 <div class="flex flex-col min-w-0 pr-3 flex-1">
 <div class="flex items-center gap-1.5">
 <div class="h-3.5 w-14 rounded skeleton-shimmer"></div>
@@ -362,17 +358,17 @@
 <!-- Modern Android Bottom Navigation (4 Tabs with Trips in Magenta #AF0088) -->
 <nav class="fixed bottom-0 inset-x-0 z-50 bg-white border-t border-divider pb-safe shadow-[0_-2px_6px_rgba(0,0,0,0.03)]">
 <div class="grid grid-cols-4 h-16 w-full items-center"><!-- Dashboard -->
-<a class="flex flex-col items-center justify-center gap-1 text-subtle-gray hover:text-charcoal transition-all duration-200 ease-out active:scale-95" data-path="driver-dashboard" href="#">
+<a class="flex flex-col items-center justify-center gap-1 text-subtle-gray hover:text-charcoal transition-all duration-200 ease-out active:scale-95" data-path="driver-dashboard" href="dashboard.html">
 <span class="material-symbols-outlined text-[23px] transition-transform duration-200">dashboard</span>
 <span class="text-[11px] font-medium">Dashboard</span>
 </a>
 <!-- Distribution -->
-<a class="flex flex-col items-center justify-center gap-1 text-subtle-gray hover:text-charcoal transition-all duration-200 ease-out active:scale-95" data-path="passenger-distribution" href="#">
+<a class="flex flex-col items-center justify-center gap-1 text-subtle-gray hover:text-charcoal transition-all duration-200 ease-out active:scale-95" data-path="passenger-distribution" href="distribution.html">
 <span class="material-symbols-outlined text-[23px] transition-transform duration-200">hub</span>
 <span class="text-[11px] font-medium">Distribution</span>
 </a>
 <!-- Active: Trips in Magenta -->
-<a aria-current="page" class="flex flex-col items-center justify-center gap-1 text-magenta transition-all duration-200 ease-out active:scale-95" data-path="trip-records" href="#">
+<a aria-current="page" class="flex flex-col items-center justify-center gap-1 text-magenta transition-all duration-200 ease-out active:scale-95" data-path="trip-records" href="trips.html">
 <span class="material-symbols-outlined text-[23px] font-bold transition-transform duration-200 scale-105">receipt_long</span>
 <span class="text-[11px] font-semibold text-magenta">Trips</span>
 </a>
@@ -451,4 +447,6 @@
       }
     })();
   </script>
+
+
 </body></html>
