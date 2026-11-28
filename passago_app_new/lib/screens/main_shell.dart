@@ -1,22 +1,18 @@
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 
+import '../state/app_state.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
 import 'dashboard_screen.dart';
 import 'distribution_screen.dart';
+import 'settings_screen.dart';
 import 'trips_screen.dart';
 
 /// Holds the three screens that share the bottom navigation:
 /// Driver Dashboard (4), Passenger Distribution (5) and Trip Records (6).
-class MainShell extends StatefulWidget {
+/// Settings opens from the gear icon in the top bar.
+class MainShell extends StatelessWidget {
   const MainShell({super.key});
-
-  @override
-  State<MainShell> createState() => _MainShellState();
-}
-
-class _MainShellState extends State<MainShell> {
-  int _index = 0;
 
   static const _titles = [
     'Driver Dashboard',
@@ -24,65 +20,61 @@ class _MainShellState extends State<MainShell> {
     'Trip Records',
   ];
 
-  void goTo(int index) => setState(() => _index = index);
-
   @override
   Widget build(BuildContext context) {
+    final state = AppScope.of(context);
+
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.transparent,
-        automaticallyImplyLeading: false,
-        titleSpacing: 16,
-        shape: const Border(bottom: BorderSide(color: PG.border)),
-        title: Row(
-          children: [
-            const PgLogo(size: 28),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                _titles[_index],
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
+      appBar: pgAppBar(
+        title: _titles[state.tabIndex],
+        actions: [
+          IconButton(
+            tooltip: 'Settings',
+            icon: const Icon(Icons.settings_outlined, color: PG.body),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const SettingsScreen()),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(width: 4),
+        ],
       ),
-      // IndexedStack keeps each screen alive, so the trip offer countdown
-      // and scroll positions are not lost when switching tabs.
+      // IndexedStack keeps each tab alive, so scroll positions are kept.
       body: IndexedStack(
-        index: _index,
-        children: [
-          DashboardScreen(onOpenQueue: () => goTo(1), onOpenTrips: () => goTo(2)),
-          const DistributionScreen(),
-          const TripsScreen(),
+        index: state.tabIndex,
+        children: const [
+          DashboardScreen(),
+          DistributionScreen(),
+          TripsScreen(),
         ],
       ),
       bottomNavigationBar: DecoratedBox(
         decoration: const BoxDecoration(
           border: Border(top: BorderSide(color: PG.border)),
         ),
-        child: NavigationBar(
-          selectedIndex: _index,
-          onDestinationSelected: goTo,
-          destinations: const [
-            NavigationDestination(
+        child: BottomNavigationBar(
+          currentIndex: state.tabIndex,
+          onTap: state.setTab,
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: PG.canvas,
+          elevation: 0,
+          selectedItemColor: PG.magenta,
+          unselectedItemColor: PG.muted,
+          selectedLabelStyle:
+              const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+          unselectedLabelStyle: const TextStyle(fontSize: 12),
+          items: const [
+            BottomNavigationBarItem(
               icon: Icon(Icons.dashboard_outlined),
-              selectedIcon: Icon(Icons.dashboard),
+              activeIcon: Icon(Icons.dashboard),
               label: 'Dashboard',
             ),
-            NavigationDestination(
-              icon: Icon(Icons.hub_outlined),
-              selectedIcon: Icon(Icons.hub),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.format_list_numbered),
               label: 'Distribution',
             ),
-            NavigationDestination(
+            BottomNavigationBarItem(
               icon: Icon(Icons.receipt_long_outlined),
-              selectedIcon: Icon(Icons.receipt_long),
+              activeIcon: Icon(Icons.receipt_long),
               label: 'Trips',
             ),
           ],

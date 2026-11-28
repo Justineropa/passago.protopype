@@ -1,6 +1,6 @@
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 
-import '../data/mock_data.dart';
+import '../models.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
@@ -19,27 +19,34 @@ class _TripsScreenState extends State<TripsScreen> {
   _Period _period = _Period.today;
   Shift? _shift; // null = all shifts
 
-  bool _inPeriod(TripRecord t) => switch (_period) {
-        _Period.today => t.daysAgo == 0,
-        _Period.week => t.daysAgo < 7,
-        _Period.month => t.daysAgo < 31,
-      };
+  bool _inPeriod(TripRecord trip, DateTime now) {
+    final today = DateTime(now.year, now.month, now.day);
+    final day = DateTime(
+      trip.startedAt.year,
+      trip.startedAt.month,
+      trip.startedAt.day,
+    );
+    final daysAgo = today.difference(day).inDays;
+    switch (_period) {
+      case _Period.today:
+        return daysAgo == 0;
+      case _Period.week:
+        return daysAgo < 7;
+      case _Period.month:
+        return daysAgo < 31;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final state = AppScope.of(context);
+    final now = DateTime.now();
 
-    final trips = state.allTrips
-        .where(_inPeriod)
+    final trips = state.trips
+        .where((t) => _inPeriod(t, now))
         .where((t) => _shift == null || t.shift == _shift)
         .toList();
-    final completed = trips.where((t) => !t.cancelled).toList();
-
-    final fares = completed.fold<int>(0, (sum, t) => sum + t.fare);
-    final passengers = completed.fold<int>(0, (sum, t) => sum + t.passengers);
-
-    // Group trips by how many days ago they happened.
-    final days = trips.map((t) => t.daysAgo).toSet().toList()..sort();
+    final passengers = trips.fold<int>(0, (sum, t) => sum + t.passengers);
 
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -49,41 +56,64 @@ class _TripsScreenState extends State<TripsScreen> {
           style: TextStyle(fontSize: 13, color: PG.muted),
         ),
         const SizedBox(height: 12),
-        _ChipRow<_Period>(
-          options: const [
-            (_Period.today, 'Today'),
-            (_Period.week, 'This week'),
-            (_Period.month, 'This month'),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            PgChip(
+              label: 'Today',
+              selected: _period == _Period.today,
+              onTap: () => setState(() => _period = _Period.today),
+            ),
+            PgChip(
+              label: 'This week',
+              selected: _period == _Period.week,
+              onTap: () => setState(() => _period = _Period.week),
+            ),
+            PgChip(
+              label: 'This month',
+              selected: _period == _Period.month,
+              onTap: () => setState(() => _period = _Period.month),
+            ),
           ],
-          selected: _period,
-          onSelected: (v) => setState(() => _period = v),
         ),
         const SizedBox(height: 8),
-        _ChipRow<Shift?>(
-          options: const [
-            (null, 'All shifts'),
-            (Shift.am, 'AM shift'),
-            (Shift.pm, 'PM shift'),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            PgChip(
+              label: 'All shifts',
+              selected: _shift == null,
+              onTap: () => setState(() => _shift = null),
+            ),
+            PgChip(
+              label: 'AM shift',
+              selected: _shift == Shift.am,
+              onTap: () => setState(() => _shift = Shift.am),
+            ),
+            PgChip(
+              label: 'PM shift',
+              selected: _shift == Shift.pm,
+              onTap: () => setState(() => _shift = Shift.pm),
+            ),
           ],
-          selected: _shift,
-          onSelected: (v) => setState(() => _shift = v),
         ),
         const SizedBox(height: 16),
-        PgCard(
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          child: IntrinsicHeight(
-            child: Row(
-              children: [
-                _Stat(value: '₱$fares', label: 'Gross fares'),
-                const VerticalDivider(width: 1, color: PG.hairline),
-                _Stat(value: '$passengers pax', label: 'Passengers'),
-                const VerticalDivider(width: 1, color: PG.hairline),
-                _Stat(value: '${completed.length}', label: 'Completed trips'),
-              ],
+        Row(
+          children: [
+            Expanded(
+              child: _Stat(value: '${trips.length}', label: 'Completed trips'),
             ),
-          ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _Stat(value: '$passengers', label: 'Passengers'),
+            ),
+          ],
         ),
         const SizedBox(height: 20),
+        const SectionLabel('Trips'),
+        const SizedBox(height: 10),
         if (trips.isEmpty)
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 32),
@@ -95,58 +125,7 @@ class _TripsScreenState extends State<TripsScreen> {
             ),
           )
         else
-          for (final daysAgo in days) ...[
-            _DayHeader(
-              daysAgo: daysAgo,
-              trips: trips.where((t) => t.daysAgo == daysAgo).toList(),
-            ),
-            for (final trip in trips.where((t) => t.daysAgo == daysAgo))
-              _TripTile(trip: trip),
-            const SizedBox(height: 12),
-          ],
-      ],
-    );
-  }
-}
-
-class _ChipRow<T> extends StatelessWidget {
-  const _ChipRow({
-    required this.options,
-    required this.selected,
-    required this.onSelected,
-  });
-
-  final List<(T, String)> options;
-  final T selected;
-  final ValueChanged<T> onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        for (final option in options)
-          ChoiceChip(
-            label: Text(option.$2),
-            selected: option.$1 == selected,
-            onSelected: (_) => onSelected(option.$1),
-            showCheckmark: false,
-            selectedColor: PG.plum,
-            backgroundColor: Colors.white,
-            side: BorderSide(
-              color: option.$1 == selected ? PG.plum : PG.borderStrong,
-            ),
-            labelStyle: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: option.$1 == selected ? Colors.white : PG.body,
-            ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(999),
-            ),
-            materialTapTargetSize: MaterialTapTargetSize.padded,
-          ),
+          for (final trip in trips) _TripTile(trip: trip, now: now),
       ],
     );
   }
@@ -160,53 +139,21 @@ class _Stat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(value,
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-            const SizedBox(height: 2),
-            Text(label,
-                style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: PG.muted)),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _DayHeader extends StatelessWidget {
-  const _DayHeader({required this.daysAgo, required this.trips});
-
-  final int daysAgo;
-  final List<TripRecord> trips;
-
-  @override
-  Widget build(BuildContext context) {
-    final date = DateTime.now().subtract(Duration(days: daysAgo));
-    final heading =
-        daysAgo == 0 ? 'Today, ${dayHeading(date)}' : dayHeading(date);
-    final fares = trips.fold<int>(0, (sum, t) => sum + t.fare);
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return PgPanel(
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Text(heading,
-                style: const TextStyle(
-                    fontSize: 14, fontWeight: FontWeight.w700)),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.w700,
+              color: PG.ink,
+            ),
           ),
-          Text('${trips.length} logged • ₱$fares',
-              style: const TextStyle(fontSize: 12, color: PG.muted)),
+          const SizedBox(height: 2),
+          Text(label, style: const TextStyle(fontSize: 13, color: PG.muted)),
         ],
       ),
     );
@@ -214,20 +161,22 @@ class _DayHeader extends StatelessWidget {
 }
 
 class _TripTile extends StatelessWidget {
-  const _TripTile({required this.trip});
+  const _TripTile({required this.trip, required this.now});
 
   final TripRecord trip;
+  final DateTime now;
 
   @override
   Widget build(BuildContext context) {
-    final cancelled = trip.cancelled;
+    final fromTerminal = trip.origin == TripOrigin.terminal;
+    final plural = trip.passengers == 1 ? 'passenger' : 'passengers';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        color: PG.canvas,
+        borderRadius: BorderRadius.circular(PG.radius),
         border: Border.all(color: PG.border),
       ),
       child: Row(
@@ -237,44 +186,27 @@ class _TripTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${trip.time} • ${trip.shift.label}',
+                  '${dayLabel(trip.startedAt, now)}, '
+                  '${timeLabel(trip.startedAt)} • ${trip.shift.label}',
                   style: const TextStyle(fontSize: 12, color: PG.muted),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 3),
                 Text(
-                  'Terminal → ${trip.destination}',
+                  '${trip.passengers} $plural • ${trip.minutes} min',
                   style: const TextStyle(
-                      fontSize: 15, fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  cancelled
-                      ? 'Cancelled by passenger'
-                      : '${trip.passengers} pax • ${trip.distanceKm} km • '
-                          'Turn #${trip.turnNo}',
-                  style: const TextStyle(fontSize: 12, color: PG.secondary),
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    color: PG.ink,
+                  ),
                 ),
               ],
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                '₱${trip.fare}.00',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: cancelled ? PG.muted : PG.ink,
-                ),
-              ),
-              const SizedBox(height: 4),
-              PgPill(
-                cancelled ? 'VOID' : 'PAID',
-                background: cancelled ? PG.surface : PG.magentaTint,
-                color: cancelled ? PG.muted : PG.magenta,
-              ),
-            ],
+          const SizedBox(width: 8),
+          PgTag(
+            fromTerminal ? 'Started at terminal' : 'Started on street',
+            background: fromTerminal ? PG.magentaTint : PG.surface,
+            color: fromTerminal ? PG.magenta : PG.body,
           ),
         ],
       ),

@@ -1,160 +1,227 @@
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 
 import '../data/mock_data.dart';
+import '../models.dart';
 import '../services/passenger_button_service.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
+import '../widgets/pairing_sheet.dart';
+import '../widgets/raise_quota_sheet.dart';
+import 'qr_scan_screen.dart';
 
 /// Screen 4 of 6: Driver Dashboard.
+///
+/// Shown while the driver is NOT on a trip. On a trip the app switches to
+/// Trip mode instead (see shift_gate.dart).
 class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({
-    super.key,
-    required this.onOpenQueue,
-    required this.onOpenTrips,
-  });
-
-  final VoidCallback onOpenQueue;
-  final VoidCallback onOpenTrips;
+  const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final state = AppScope.of(context);
 
     return ListView(
-      padding: EdgeInsets.zero,
+      padding: const EdgeInsets.all(16),
       children: [
-        _DriverHeader(state: state),
-        Padding(
-          padding: const EdgeInsets.all(16),
+        _Header(state: state),
+        const SizedBox(height: 16),
+        _DeviceCard(state: state),
+        const SizedBox(height: 12),
+        _PassengerCard(state: state),
+        const SizedBox(height: 12),
+        _QueueCard(state: state),
+        const SizedBox(height: 20),
+        PgButton(
+          label: 'End shift',
+          outlined: true,
+          onPressed: () => _confirmEndShift(context, state),
+        ),
+        const SizedBox(height: 8),
+      ],
+    );
+  }
+}
+
+Future<void> _confirmEndShift(BuildContext context, AppState state) async {
+  final confirmed = await showConfirmDialog(
+    context,
+    title: 'End your shift?',
+    message: 'Your passenger count and trips will be saved.',
+    detail: PgPanel(
+      color: PG.tint,
+      borderColor: PG.borderSoft,
+      padding: const EdgeInsets.all(12),
+      child: Text(
+        'Passengers: ${state.shiftPassengers} of ${state.quota}\n'
+        'Trips: ${state.shiftTripCount}',
+        style: const TextStyle(fontSize: 14, height: 1.5, color: PG.body),
+      ),
+    ),
+    safeLabel: 'Keep driving',
+    confirmLabel: 'End shift',
+  );
+  if (confirmed == true) state.endShiftManually();
+}
+
+Future<void> _confirmLeaveQueue(BuildContext context, AppState state) async {
+  final confirmed = await showConfirmDialog(
+    context,
+    title: 'Leave the queue?',
+    message: 'You will go to the end of the line if you join again.',
+    safeLabel: 'Stay in line',
+    confirmLabel: 'Leave queue',
+  );
+  if (confirmed == true) state.leaveQueue();
+}
+
+// ------------------------------------------------------------------ header
+
+class _Header extends StatelessWidget {
+  const _Header({required this.state});
+
+  final AppState state;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _PassengerCard(state: state),
-              const SizedBox(height: 16),
-              _QueueCard(state: state, onOpenQueue: onOpenQueue),
-              const SizedBox(height: 16),
-              _SummaryRow(state: state, onTap: onOpenTrips),
-              const SizedBox(height: 20),
-              const _DispatchSection(),
+              const Row(
+                children: [
+                  StatusDot(color: PG.pink),
+                  SizedBox(width: 6),
+                  Text('Active shift',
+                      style: TextStyle(fontSize: 12, color: PG.muted)),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                state.driverName,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
+                  color: PG.ink,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                'Body No. ${state.driverBodyNo} • '
+                '${state.shift?.label ?? ''} shift • '
+                'On duty ${durationLabel(state.onDuty)}',
+                style: const TextStyle(fontSize: 13, color: PG.muted),
+              ),
             ],
           ),
+        ),
+        const SizedBox(width: 12),
+        Column(
+          children: [
+            const Text('Break',
+                style: TextStyle(fontSize: 12, color: PG.muted)),
+            Switch(
+              value: state.phase == DriverPhase.onBreak,
+              onChanged: state.setBreak,
+            ),
+          ],
         ),
       ],
     );
   }
 }
 
-class _DriverHeader extends StatelessWidget {
-  const _DriverHeader({required this.state});
+// ------------------------------------------------------------------ device
+
+class _DeviceCard extends StatelessWidget {
+  const _DeviceCard({required this.state});
 
   final AppState state;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: PG.hairline)),
-      ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text.rich(
-                  TextSpan(
-                    text: state.driverName,
-                    style: const TextStyle(
-                        fontSize: 14, fontWeight: FontWeight.w500),
-                    children: [
-                      TextSpan(
-                        text: ' • Body No. ${state.driverBodyNo}'
-                            ' • ${state.shift.label} shift',
-                        style: const TextStyle(
-                          color: PG.muted,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ],
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text.rich(
-                TextSpan(
-                  text: 'On duty: ',
-                  style: const TextStyle(fontSize: 12, color: PG.secondary),
-                  children: [
-                    TextSpan(
-                      text: durationLabel(state.onDuty),
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w700,
-                        color: PG.ink,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          _StatusSelector(
-            value: state.status,
-            onChanged: state.setStatus,
-          ),
-        ],
-      ),
-    );
-  }
-}
+    final connection = state.connection;
 
-class _StatusSelector extends StatelessWidget {
-  const _StatusSelector({required this.value, required this.onChanged});
+    final String title;
+    final String subtitle;
+    var subtitleColor = PG.muted;
+    switch (connection) {
+      case ButtonConnection.connected:
+        title = 'Handlebar button connected';
+        if (state.lowBattery) {
+          subtitle = 'Low battery (${state.batteryPercent}%). Charge soon.';
+          subtitleColor = PG.dangerText;
+        } else {
+          subtitle = state.batteryPercent == null
+              ? 'Ready'
+              : 'Battery ${state.batteryPercent}%';
+        }
+      case ButtonConnection.connecting:
+        title = 'Connecting to handlebar button...';
+        subtitle = 'Keep the device near your phone.';
+      case ButtonConnection.reconnecting:
+        title = 'Connection lost - reconnecting';
+        subtitle = 'Passengers you count in the app are still saved.';
+      case ButtonConnection.disconnected:
+        title = 'Handlebar button not connected';
+        subtitle = 'The +1 button still works without the device.';
+    }
 
-  final DriverStatus value;
-  final ValueChanged<DriverStatus> onChanged;
+    final busy = connection == ButtonConnection.connecting ||
+        connection == ButtonConnection.reconnecting;
 
-  static const _labels = {
-    DriverStatus.available: 'Available',
-    DriverStatus.onTrip: 'On trip',
-    DriverStatus.onBreak: 'Break',
-  };
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: PG.surface,
-        borderRadius: BorderRadius.circular(14),
-      ),
+    return PgPanel(
+      padding: const EdgeInsets.fromLTRB(16, 12, 8, 12),
       child: Row(
         children: [
-          for (final status in DriverStatus.values)
-            Expanded(
-              child: GestureDetector(
-                onTap: () => onChanged(status),
-                behavior: HitTestBehavior.opaque,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  height: 44,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: status == value ? PG.plum : Colors.transparent,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(
-                    _labels[status]!,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: status == value ? Colors.white : PG.secondary,
-                    ),
+          Icon(
+            connection == ButtonConnection.connected
+                ? Icons.bluetooth_connected
+                : Icons.bluetooth_disabled,
+            color: connection == ButtonConnection.connected
+                ? PG.magenta
+                : PG.muted,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: PG.ink,
                   ),
                 ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: TextStyle(fontSize: 12, color: subtitleColor),
+                ),
+              ],
+            ),
+          ),
+          if (busy)
+            const Padding(
+              padding: EdgeInsets.only(right: 8),
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: PG.magenta,
+                ),
               ),
+            )
+          else if (connection == ButtonConnection.disconnected)
+            PgTextButton(
+              label: 'Connect',
+              onPressed: () => startDevicePairing(context, state),
             ),
         ],
       ),
@@ -162,35 +229,35 @@ class _StatusSelector extends StatelessWidget {
   }
 }
 
+// -------------------------------------------------------------- passengers
+
 class _PassengerCard extends StatelessWidget {
   const _PassengerCard({required this.state});
 
   final AppState state;
 
-  String _lastRegistered() {
-    final at = state.lastRegisteredAt;
-    if (at == null) return 'No passengers registered yet';
-    final minutes = DateTime.now().difference(at).inMinutes;
-    if (minutes < 1) return 'Last registered: just now';
-    return 'Last registered: $minutes min${minutes == 1 ? '' : 's'} ago';
-  }
-
   @override
   Widget build(BuildContext context) {
-    final connected = state.connection == ButtonConnection.connected;
+    final progress = state.quota == 0
+        ? 0.0
+        : (state.shiftPassengers / state.quota).clamp(0.0, 1.0).toDouble();
 
-    return PgCard(
+    return PgPanel(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _ConnectionRow(state: state),
-          const Divider(height: 24, color: PG.hairline),
-          const Text(
-            "Today's live passenger count",
-            style: TextStyle(
-                fontSize: 13, fontWeight: FontWeight.w500, color: PG.secondary),
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Passengers this shift',
+                style: TextStyle(
+                    fontSize: 14, fontWeight: FontWeight.w500, color: PG.body),
+              ),
+              PgTag('Not on a trip'),
+            ],
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 6),
           Row(
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
@@ -198,61 +265,68 @@ class _PassengerCard extends StatelessWidget {
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 220),
                 transitionBuilder: (child, animation) => ScaleTransition(
-                  scale: Tween<double>(begin: 0.8, end: 1).animate(animation),
+                  scale: Tween<double>(begin: 0.85, end: 1).animate(animation),
                   child: FadeTransition(opacity: animation, child: child),
                 ),
                 child: Text(
-                  '${state.passengerCount}',
-                  key: ValueKey<int>(state.passengerCount),
+                  '${state.shiftPassengers}',
+                  key: ValueKey<int>(state.shiftPassengers),
                   style: const TextStyle(
                     fontSize: 56,
                     height: 1.1,
                     fontWeight: FontWeight.w700,
+                    color: PG.ink,
                   ),
                 ),
               ),
               const SizedBox(width: 8),
               const Text(
                 'passengers',
-                style: TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.w500, color: PG.body),
-              ),
-              const SizedBox(width: 8),
-              AnimatedOpacity(
-                duration: const Duration(milliseconds: 200),
-                opacity: state.showRegisteredToast ? 1 : 0,
-                child: const PgPill(
-                  '+1 registered',
-                  background: PG.magentaTint,
-                  color: PG.magenta,
-                ),
+                style: TextStyle(fontSize: 16, color: PG.body),
               ),
             ],
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 10),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Icon(Icons.history, size: 14, color: PG.muted),
-              const SizedBox(width: 4),
-              Text(_lastRegistered(),
-                  style: const TextStyle(fontSize: 12, color: PG.muted)),
+              Text(
+                'Quota: ${state.quota}',
+                style: const TextStyle(
+                    fontSize: 14, fontWeight: FontWeight.w500, color: PG.ink),
+              ),
+              PgTextButton(
+                label: 'Raise quota',
+                onPressed: () => showRaiseQuotaSheet(context, state),
+              ),
             ],
           ),
-          const SizedBox(height: 14),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(PG.radiusSmall),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 8,
+              backgroundColor: PG.surface,
+              color: PG.magenta,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            '${state.shiftPassengers} of ${state.quota} passengers',
+            style: const TextStyle(fontSize: 12, color: PG.muted),
+          ),
+          const SizedBox(height: 16),
           PgButton(
-            label: 'Simulate handlebar click (+1 passenger)',
-            icon: Icons.touch_app,
-            height: 52,
-            onPressed: connected ? () => state.simulateButtonPress() : null,
+            label: '+1 passenger',
+            icon: Icons.add,
+            height: 56,
+            onPressed: () => state.registerPassenger(fromButton: false),
           ),
           const SizedBox(height: 8),
-          const Center(
-            child: Text(
-              'Pressing the physical handlebar button updates this count '
-              'automatically once the device is connected.',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 12, color: PG.muted),
-            ),
+          const Text(
+            'Works with or without the handlebar button. Your first '
+            'passenger starts a trip.',
+            style: TextStyle(fontSize: 12, height: 1.4, color: PG.muted),
           ),
         ],
       ),
@@ -260,338 +334,115 @@ class _PassengerCard extends StatelessWidget {
   }
 }
 
-class _ConnectionRow extends StatefulWidget {
-  const _ConnectionRow({required this.state});
-
-  final AppState state;
-
-  @override
-  State<_ConnectionRow> createState() => _ConnectionRowState();
-}
-
-class _ConnectionRowState extends State<_ConnectionRow>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _pulse = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 1400),
-  );
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _syncPulse();
-  }
-
-  @override
-  void didUpdateWidget(covariant _ConnectionRow oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    _syncPulse();
-  }
-
-  /// Only pulse while connecting or connected, and never when the phone
-  /// has animations turned off.
-  void _syncPulse() {
-    final active =
-        widget.state.connection != ButtonConnection.disconnected &&
-            !MediaQuery.disableAnimationsOf(context);
-    if (active && !_pulse.isAnimating) {
-      _pulse.repeat();
-    } else if (!active && _pulse.isAnimating) {
-      _pulse.stop();
-    }
-  }
-
-  @override
-  void dispose() {
-    _pulse.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final state = widget.state;
-    final connection = state.connection;
-
-    final label = switch (connection) {
-      ButtonConnection.connected => 'Handlebar button connected',
-      ButtonConnection.connecting => 'Connecting to handlebar button…',
-      ButtonConnection.disconnected => 'Handlebar button not connected',
-    };
-    final dotColor = connection == ButtonConnection.connected
-        ? PG.magenta
-        : (connection == ButtonConnection.connecting ? PG.plum : PG.muted);
-
-    return Row(
-      children: [
-        SizedBox(
-          width: 16,
-          height: 16,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              AnimatedBuilder(
-                animation: _pulse,
-                builder: (context, _) => Opacity(
-                  opacity: connection == ButtonConnection.disconnected
-                      ? 0
-                      : 0.45 * (1 - _pulse.value),
-                  child: Transform.scale(
-                    scale: 0.6 + _pulse.value * 0.8,
-                    child: Container(
-                      width: 16,
-                      height: 16,
-                      decoration:
-                          BoxDecoration(color: dotColor, shape: BoxShape.circle),
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                width: 8,
-                height: 8,
-                decoration:
-                    BoxDecoration(color: dotColor, shape: BoxShape.circle),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
-            child: Align(
-              key: ValueKey<String>(label),
-              alignment: Alignment.centerLeft,
-              child: Text(
-                label,
-                style: const TextStyle(
-                    fontSize: 13, fontWeight: FontWeight.w500),
-              ),
-            ),
-          ),
-        ),
-        if (connection == ButtonConnection.disconnected)
-          TextButton(
-            onPressed: state.connectButton,
-            style: TextButton.styleFrom(
-              foregroundColor: PG.magenta,
-              minimumSize: const Size(48, 40),
-            ),
-            child: const Text('Reconnect'),
-          )
-        else if (state.batteryPercent != null)
-          Row(
-            children: [
-              const Icon(Icons.battery_5_bar, size: 16, color: PG.muted),
-              const SizedBox(width: 2),
-              Text(
-                '${state.batteryPercent}% battery',
-                style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: PG.secondary),
-              ),
-            ],
-          ),
-      ],
-    );
-  }
-}
+// ------------------------------------------------------------------- queue
 
 class _QueueCard extends StatelessWidget {
-  const _QueueCard({required this.state, required this.onOpenQueue});
+  const _QueueCard({required this.state});
 
   final AppState state;
-  final VoidCallback onOpenQueue;
 
   @override
   Widget build(BuildContext context) {
-    final position = state.myPosition;
-    final available = state.availableQueue.length;
-    final average = state.terminalAverage;
-    final served = state.passengerCount;
-    final difference = average - served;
+    final Widget body;
 
-    String note;
-    if (position == null) {
-      note = 'You are not in the queue while your status is not Available.';
-    } else if (difference >= 1) {
-      final n = difference.round();
-      note = 'You have $n passenger${n == 1 ? '' : 's'} fewer than the '
-          'terminal average, so you are prioritized in the queue.';
-    } else {
-      note = 'You are at or above the terminal average, so drivers with '
-          'fewer passengers are served before you.';
+    switch (state.phase) {
+      case DriverPhase.inQueue:
+        final position = state.myPosition ?? 1;
+        final next = state.nextInLine;
+        final iAmNext = next != null && next.isMe;
+        body = Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                Text(
+                  '#$position',
+                  style: const TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w700,
+                    color: PG.ink,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Flexible(
+                  child: Text(
+                    'in line of ${state.line.length} drivers',
+                    style: const TextStyle(fontSize: 14, color: PG.body),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            if (iAmNext)
+              const PgTag('You are next',
+                  background: PG.magentaTint, color: PG.magenta)
+            else
+              Text(
+                next == null
+                    ? ''
+                    : 'Next: ${next.name} (Body ${next.bodyNo})',
+                style: const TextStyle(fontSize: 13, color: PG.muted),
+              ),
+            const SizedBox(height: 14),
+            PgButton(
+              label: 'Leave queue',
+              outlined: true,
+              onPressed: () => _confirmLeaveQueue(context, state),
+            ),
+          ],
+        );
+      case DriverPhase.onBreak:
+        body = Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'You left the queue. Join again after your break.',
+              style: TextStyle(fontSize: 14, height: 1.4, color: PG.body),
+            ),
+            const SizedBox(height: 14),
+            PgButton(
+              label: 'Join queue',
+              icon: Icons.qr_code_scanner,
+              onPressed: () => openQrScan(context, state),
+            ),
+          ],
+        );
+      case DriverPhase.idle:
+      case DriverPhase.onTrip:
+        body = Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'You are not in the queue. Scan the terminal QR code to join '
+              'the end of the line.',
+              style: TextStyle(fontSize: 14, height: 1.4, color: PG.body),
+            ),
+            const SizedBox(height: 14),
+            PgButton(
+              label: 'Join queue',
+              icon: Icons.qr_code_scanner,
+              onPressed: () => openQrScan(context, state),
+            ),
+          ],
+        );
     }
 
-    return PgCard(
+    return PgPanel(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              SectionLabel('Fair turn queue position'),
-              PgPill('Live Terminal'),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Text(
-                position == null ? 'Not in queue' : '#$position in line',
-                style: const TextStyle(
-                    fontSize: 24, fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'of $available available drivers',
-                style: const TextStyle(fontSize: 14, color: PG.secondary),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: PG.tint,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: PG.hairline),
-            ),
-            child: Text.rich(
-              TextSpan(
-                text: 'You served: ',
-                style: const TextStyle(
-                    fontSize: 13, fontWeight: FontWeight.w500, color: PG.body),
-                children: [
-                  TextSpan(
-                    text: '$served pax',
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w700, color: PG.ink),
-                  ),
-                  const TextSpan(text: '  •  Terminal avg: '),
-                  TextSpan(
-                    text: '${average.round()} pax',
-                    style: const TextStyle(color: PG.secondary),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            note,
-            style: const TextStyle(
-                fontSize: 12, height: 1.45, color: PG.secondary),
+          const SectionLabel('Terminal queue'),
+          const SizedBox(height: 2),
+          const Text(
+            MockData.terminalName,
+            style: TextStyle(fontSize: 13, color: PG.muted),
           ),
           const SizedBox(height: 12),
-          PgButton(
-            label: 'View queue board',
-            icon: Icons.format_list_numbered,
-            outlined: true,
-            height: 48,
-            onPressed: onOpenQueue,
-          ),
+          body,
         ],
       ),
-    );
-  }
-}
-
-class _SummaryRow extends StatelessWidget {
-  const _SummaryRow({required this.state, required this.onTap});
-
-  final AppState state;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    Widget cell(String value, String label) => Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(value,
-                    style: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.w700)),
-                const SizedBox(height: 2),
-                Text(label,
-                    style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: PG.muted)),
-              ],
-            ),
-          ),
-        );
-
-    return PgCard(
-      padding: const EdgeInsets.symmetric(vertical: 14),
-      onTap: onTap,
-      child: IntrinsicHeight(
-        child: Row(
-          children: [
-            cell('${state.todaysCompletedTrips}', 'Trips'),
-            const VerticalDivider(width: 1, color: PG.hairline),
-            cell('${state.passengerCount}', 'Passengers'),
-            const VerticalDivider(width: 1, color: PG.hairline),
-            cell('₱${state.todaysFares}', 'Total fares'),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _DispatchSection extends StatelessWidget {
-  const _DispatchSection();
-
-  @override
-  Widget build(BuildContext context) {
-    Widget row(IconData icon, String lead, String text) => Container(
-          margin: const EdgeInsets.only(top: 8),
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: const Color(0xFFFAF8FB),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: PG.hairline),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(icon, size: 20),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text.rich(
-                  TextSpan(
-                    text: lead,
-                    style: const TextStyle(
-                        fontSize: 13, fontWeight: FontWeight.w500, height: 1.35),
-                    children: [
-                      TextSpan(
-                        text: text,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.w400, color: PG.body),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SectionLabel('Live dispatch & traffic'),
-        row(Icons.commute, 'Terminal dispatch: ', MockData.dispatchSummary),
-        row(Icons.info_outline, '', MockData.advisory),
-      ],
     );
   }
 }
