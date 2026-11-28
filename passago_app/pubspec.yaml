@@ -1,13 +1,13 @@
 name: passago_app
 description: PassaGo - A Smart Passenger Distribution and Transportation Information System (driver app).
 publish_to: "none"
-version: 0.1.0+1
+version: 0.2.0+2
 
 environment:
   sdk: ">=3.3.0 <4.0.0"
 
-# No third-party packages yet on purpose. The Bluetooth package
-# (flutter_blue_plus) is added later in the BLE phase, see README.md.
+# No third-party packages yet on purpose. The camera/QR scanner and Bluetooth
+# packages are added in the next phases, see README.md.
 dependencies:
   flutter:
     sdk: flutter
@@ -19,3 +19,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/branding/

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../data/mock_data.dart';
+import '../models.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
-import 'main_shell.dart';
 
-/// Screen 3 of 6: Schedule Selection (AM or PM shift).
+/// Screen 3 of 6: Schedule Selection (AM or PM shift) and the daily quota.
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});
 
@@ -15,182 +15,242 @@ class ScheduleScreen extends StatefulWidget {
 }
 
 class _ScheduleScreenState extends State<ScheduleScreen> {
+  static const _minQuota = 1;
+  static const _maxQuota = 99;
+
   late Shift _selected;
+  int _quota = 10;
 
   @override
   void initState() {
     super.initState();
     // Pre-select the shift that is open right now.
-    final hour = DateTime.now().hour;
-    _selected = (hour >= 5 && hour < 13) ? Shift.am : Shift.pm;
+    _selected = _isOpen(Shift.am) ? Shift.am : Shift.pm;
   }
 
-  /// "Open now" while the shift hours are running, otherwise "Upcoming"/"Closed".
-  String _statusFor(Shift shift) {
+  bool _isOpen(Shift shift) {
     final hour = DateTime.now().hour;
-    final start = shift == Shift.am ? 5 : 13;
-    final end = shift == Shift.am ? 13 : 21;
-    if (hour >= start && hour < end) return 'Open now';
-    return hour < start ? 'Upcoming' : 'Closed';
+    return hour >= shift.startHour && hour < shift.endHour;
+  }
+
+  void _cancel() {
+    AppScope.of(context).signOut();
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
   void _start() {
-    final state = AppScope.of(context);
-    state.startShift(_selected);
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute<void>(builder: (_) => const MainShell()),
-      (route) => false,
-    );
+    AppScope.of(context).startShift(_selected, _quota);
   }
 
   @override
   Widget build(BuildContext context) {
+    final state = AppScope.of(context);
+
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.transparent,
-        title: const Text(
-          'Schedule selection',
-          style: TextStyle(fontSize: 19, fontWeight: FontWeight.w500),
+      appBar: pgAppBar(title: 'Schedule selection', onBack: _cancel),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
+                children: [
+                  Entrance(
+                    delayMs: 40,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const PgTag('Shift setup'),
+                        const SizedBox(height: 10),
+                        Text(
+                          '${greeting(DateTime.now())}, ${state.driverName}',
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w700,
+                            color: PG.plum,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        const Text(
+                          'Choose your shift and set your quota for today.',
+                          style: TextStyle(
+                              fontSize: 15, height: 1.4, color: PG.body),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Entrance(
+                    delayMs: 100,
+                    child: PgPanel(
+                      padding: EdgeInsets.all(14),
+                      child: Row(
+                        children: [
+                          Icon(Icons.location_on_outlined, color: PG.magenta),
+                          SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Terminal',
+                                    style: TextStyle(
+                                        fontSize: 12, color: PG.muted)),
+                                SizedBox(height: 2),
+                                Text(
+                                  MockData.terminalName,
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                    color: PG.ink,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 22),
+                  const Entrance(
+                    delayMs: 150,
+                    child: SectionLabel('Select your shift'),
+                  ),
+                  const SizedBox(height: 10),
+                  Entrance(
+                    delayMs: 200,
+                    child: _ShiftCard(
+                      shift: Shift.am,
+                      open: _isOpen(Shift.am),
+                      selected: _selected == Shift.am,
+                      onTap: () => setState(() => _selected = Shift.am),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Entrance(
+                    delayMs: 250,
+                    child: _ShiftCard(
+                      shift: Shift.pm,
+                      open: _isOpen(Shift.pm),
+                      selected: _selected == Shift.pm,
+                      onTap: () => setState(() => _selected = Shift.pm),
+                    ),
+                  ),
+                  const SizedBox(height: 22),
+                  const Entrance(
+                    delayMs: 300,
+                    child: SectionLabel('Daily passenger quota'),
+                  ),
+                  const SizedBox(height: 10),
+                  Entrance(
+                    delayMs: 340,
+                    child: _QuotaStepper(
+                      value: _quota,
+                      min: _minQuota,
+                      max: _maxQuota,
+                      onChanged: (v) => setState(() => _quota = v),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'You can raise your quota during the shift, but not '
+                    'lower it. Your shift ends when you reach it.',
+                    style: TextStyle(fontSize: 13, height: 1.4, color: PG.muted),
+                  ),
+                  const SizedBox(height: 18),
+                  const Entrance(delayMs: 400, child: _PolicyBox()),
+                ],
+              ),
+            ),
+            Container(
+              decoration: const BoxDecoration(
+                color: PG.canvas,
+                border: Border(top: BorderSide(color: PG.border)),
+              ),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  PgButton(
+                    label: 'Start ${_selected.label} shift',
+                    trailingIcon: Icons.arrow_forward,
+                    onPressed: _start,
+                  ),
+                  PgTextButton(label: 'Cancel and return to login', onPressed: _cancel),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
-      body: Container(
-        decoration: const BoxDecoration(gradient: PG.backgroundGradient),
-        child: SafeArea(
-          child: Column(
+    );
+  }
+}
+
+class _ShiftCard extends StatelessWidget {
+  const _ShiftCard({
+    required this.shift,
+    required this.open,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final Shift shift;
+  final bool open;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final radius = BorderRadius.circular(PG.radius);
+    return Material(
+      color: selected ? PG.tint : PG.canvas,
+      shape: RoundedRectangleBorder(
+        borderRadius: radius,
+        side: BorderSide(
+          color: selected ? PG.magenta : PG.border,
+          width: selected ? 2 : 1,
+        ),
+      ),
+      child: InkWell(
+        borderRadius: radius,
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
             children: [
+              Icon(
+                selected
+                    ? Icons.radio_button_checked
+                    : Icons.radio_button_unchecked,
+                color: selected ? PG.magenta : PG.muted,
+              ),
+              const SizedBox(width: 14),
               Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Entrance(
-                      delayMs: 50,
-                      child: Text(
-                        longDate(DateTime.now()),
-                        style: const TextStyle(fontSize: 13, color: PG.muted),
+                    Text(
+                      '${shift.label} shift',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: PG.ink,
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    const Entrance(
-                      delayMs: 100,
-                      child: Text(
-                        'Select shift',
-                        style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.w700,
-                          color: PG.plum,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    const Entrance(
-                      delayMs: 150,
-                      child: Text(
-                        'Choose your driving schedule for today to join the '
-                        'terminal queue.',
-                        style: TextStyle(
-                            fontSize: 15, height: 1.4, color: PG.body),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Entrance(
-                      delayMs: 200,
-                      child: PgCard(
-                        padding: const EdgeInsets.all(14),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.storefront_outlined,
-                                color: PG.magenta),
-                            const SizedBox(width: 12),
-                            const Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Terminal base',
-                                    style: TextStyle(
-                                        fontSize: 12, color: PG.muted),
-                                  ),
-                                  SizedBox(height: 2),
-                                  Text(
-                                    MockData.routeName,
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () =>
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                      'Changing the terminal is not available in this prototype yet.'),
-                                ),
-                              ),
-                              style: TextButton.styleFrom(
-                                  foregroundColor: PG.magenta),
-                              child: const Text('Change'),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 22),
-                    const Entrance(
-                      delayMs: 250,
-                      child: SectionLabel('Available schedules'),
-                    ),
-                    const SizedBox(height: 10),
-                    Entrance(
-                      delayMs: 300,
-                      child: _ShiftCard(
-                        title: 'AM shift (${Shift.am.hours})',
-                        status: _statusFor(Shift.am),
-                        drivers: '${MockData.driversPerShift[Shift.am]} active drivers',
-                        selected: _selected == Shift.am,
-                        onTap: () => setState(() => _selected = Shift.am),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Entrance(
-                      delayMs: 360,
-                      child: _ShiftCard(
-                        title: 'PM shift (${Shift.pm.hours})',
-                        status: _statusFor(Shift.pm),
-                        drivers: '${MockData.driversPerShift[Shift.pm]} drivers ready',
-                        selected: _selected == Shift.pm,
-                        onTap: () => setState(() => _selected = Shift.pm),
-                      ),
-                    ),
-                    const SizedBox(height: 18),
-                    const Entrance(
-                      delayMs: 420,
-                      child: _PolicyBox(),
+                    const SizedBox(height: 2),
+                    Text(
+                      shift.hours,
+                      style: const TextStyle(fontSize: 14, color: PG.body),
                     ),
                   ],
                 ),
               ),
-              Container(
-                color: Colors.white,
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    PgButton(
-                      label: 'Start ${_selected.label} shift',
-                      onPressed: _start,
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'You may adjust your shift up to 30 minutes before departure.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 12, color: PG.muted),
-                    ),
-                  ],
-                ),
+              const SizedBox(width: 8),
+              PgTag(
+                open ? 'Available' : 'Scheduled',
+                background: open ? PG.magentaTint : PG.surface,
+                color: open ? PG.magenta : PG.body,
               ),
             ],
           ),
@@ -200,86 +260,74 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   }
 }
 
-class _ShiftCard extends StatelessWidget {
-  const _ShiftCard({
-    required this.title,
-    required this.status,
-    required this.drivers,
-    required this.selected,
-    required this.onTap,
+class _QuotaStepper extends StatelessWidget {
+  const _QuotaStepper({
+    required this.value,
+    required this.min,
+    required this.max,
+    required this.onChanged,
   });
 
-  final String title;
-  final String status;
-  final String drivers;
-  final bool selected;
-  final VoidCallback onTap;
+  final int value;
+  final int min;
+  final int max;
+  final ValueChanged<int> onChanged;
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 180),
-      decoration: BoxDecoration(
-        color: selected ? PG.tint : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: selected ? PG.plum : PG.border,
-          width: selected ? 2 : 1,
+    Widget stepButton(IconData icon, String label, VoidCallback? onTap) {
+      return SizedBox(
+        width: 56,
+        height: 56,
+        child: OutlinedButton(
+          onPressed: onTap,
+          style: OutlinedButton.styleFrom(
+            padding: EdgeInsets.zero,
+            foregroundColor: PG.plum,
+            side: BorderSide(color: onTap == null ? PG.borderSoft : PG.plum),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(PG.radius),
+            ),
+          ),
+          child: Icon(icon, semanticLabel: label),
         ),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
+      );
+    }
+
+    return PgPanel(
+      padding: const EdgeInsets.all(14),
+      child: Row(
+        children: [
+          stepButton(
+            Icons.remove,
+            'Lower quota',
+            value > min ? () => onChanged(value - 1) : null,
+          ),
+          Expanded(
+            child: Column(
               children: [
-                Icon(
-                  selected
-                      ? Icons.radio_button_checked
-                      : Icons.radio_button_unchecked,
-                  color: selected ? PG.plum : PG.muted,
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          const Icon(Icons.group_outlined,
-                              size: 16, color: PG.muted),
-                          const SizedBox(width: 4),
-                          Text(
-                            drivers,
-                            style: const TextStyle(
-                                fontSize: 13, color: PG.secondary),
-                          ),
-                        ],
-                      ),
-                    ],
+                Text(
+                  '$value',
+                  style: const TextStyle(
+                    fontSize: 34,
+                    fontWeight: FontWeight.w700,
+                    color: PG.ink,
+                    height: 1.1,
                   ),
                 ),
-                PgPill(
-                  status,
-                  background:
-                      status == 'Open now' ? PG.magentaTint : PG.surface,
-                  color: status == 'Open now' ? PG.magenta : PG.body,
+                const Text(
+                  'passengers',
+                  style: TextStyle(fontSize: 13, color: PG.muted),
                 ),
               ],
             ),
           ),
-        ),
+          stepButton(
+            Icons.add,
+            'Raise quota',
+            value < max ? () => onChanged(value + 1) : null,
+          ),
+        ],
       ),
     );
   }
@@ -290,17 +338,14 @@ class _PolicyBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: PG.tint,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: PG.hairline),
-      ),
-      child: const Row(
+    return const PgPanel(
+      color: PG.tint,
+      borderColor: PG.borderSoft,
+      padding: EdgeInsets.all(14),
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.balance, size: 22, color: PG.magenta),
+          Icon(Icons.info_outline, size: 22, color: PG.magenta),
           SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -308,12 +353,16 @@ class _PolicyBox extends StatelessWidget {
               children: [
                 Text(
                   'Fair turn policy',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: PG.ink,
+                  ),
                 ),
                 SizedBox(height: 4),
                 Text(
-                  'Passenger counts reset at shift start. Drivers with fewer '
-                  'passengers are prioritized in the queue within the same '
+                  'Passenger counts reset at the start of each shift. Drivers '
+                  'with fewer passengers are prioritized within the same '
                   'shift.',
                   style: TextStyle(fontSize: 13, height: 1.4, color: PG.body),
                 ),

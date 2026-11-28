@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../data/mock_data.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
 import 'login_screen.dart';
@@ -18,141 +17,97 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(gradient: PG.backgroundGradient),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: MediaQuery.sizeOf(context).height -
-                    MediaQuery.paddingOf(context).vertical -
-                    36,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Entrance(
+                delayMs: 40,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: PgWordmark(height: 56),
+                ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Entrance(
-                    delayMs: 60,
-                    child: Row(
+              const SizedBox(height: 40),
+              const Entrance(
+                delayMs: 120,
+                child: Text(
+                  'Drive with PassaGo',
+                  style: TextStyle(
+                    fontSize: 32,
+                    height: 1.15,
+                    fontWeight: FontWeight.w700,
+                    color: PG.plum,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Entrance(
+                delayMs: 180,
+                child: Text(
+                  'Join the line at the terminal, count your passengers, and '
+                  'keep a record of every trip.',
+                  style: TextStyle(fontSize: 16, height: 1.45, color: PG.body),
+                ),
+              ),
+              const SizedBox(height: 28),
+              const Entrance(
+                delayMs: 260,
+                child: _Feature(
+                  icon: Icons.format_list_numbered,
+                  title: 'Fair queue',
+                  text: 'See who is next. Drivers with fewer passengers are '
+                      'prioritized.',
+                ),
+              ),
+              const Entrance(
+                delayMs: 330,
+                child: _Feature(
+                  icon: Icons.schedule,
+                  title: 'AM and PM shifts',
+                  text: 'Choose your shift and set your own daily quota.',
+                ),
+              ),
+              const Entrance(
+                delayMs: 400,
+                child: _Feature(
+                  icon: Icons.receipt_long_outlined,
+                  title: 'Trip logs',
+                  text: 'Your trips and passenger counts are recorded '
+                      'automatically.',
+                ),
+              ),
+              const SizedBox(height: 24),
+              Entrance(
+                delayMs: 470,
+                child: Column(
+                  children: [
+                    PgButton(
+                      label: 'Get started',
+                      onPressed: () => _openLogin(context),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        PgLogo(size: 36),
-                        SizedBox(width: 10),
-                        Text(
-                          'PassaGo',
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w700,
-                            color: PG.plum,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 40),
-                  const Entrance(
-                    delayMs: 140,
-                    child: Text(
-                      'Wait Less.\nRide Fair.',
-                      style: TextStyle(
-                        fontSize: 40,
-                        height: 1.1,
-                        fontWeight: FontWeight.w700,
-                        color: PG.plum,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  const Entrance(
-                    delayMs: 220,
-                    child: Text(
-                      'PassaGo organizes terminal passenger dispatch so that '
-                      'drivers who have received fewer passengers are '
-                      'prioritized in the queue.',
-                      style: TextStyle(
-                        fontSize: 16,
-                        height: 1.45,
-                        color: PG.body,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 28),
-                  const Entrance(
-                    delayMs: 300,
-                    child: _Feature(
-                      icon: Icons.sync_alt,
-                      title: 'Fair rotation queue',
-                      text: 'Automatic turn priority based on passengers served.',
-                    ),
-                  ),
-                  const Entrance(
-                    delayMs: 380,
-                    child: _Feature(
-                      icon: Icons.schedule,
-                      title: 'Scheduled shifts',
-                      text: 'Choose morning (AM) or afternoon (PM) dispatch hours.',
-                    ),
-                  ),
-                  const Entrance(
-                    delayMs: 460,
-                    child: _Feature(
-                      icon: Icons.receipt_long,
-                      title: 'Trip records',
-                      text: 'Clear daily trip history and recorded fare totals.',
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  const Entrance(
-                    delayMs: 540,
-                    child: Row(
-                      children: [
-                        Icon(Icons.info_outline, size: 18, color: PG.muted),
-                        SizedBox(width: 8),
-                        Expanded(
+                        const Flexible(
                           child: Text(
-                            MockData.terminalName,
-                            style: TextStyle(fontSize: 13, color: PG.secondary),
+                            'Already have a Driver ID?',
+                            style: TextStyle(fontSize: 14, color: PG.body),
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 28),
-                  Entrance(
-                    delayMs: 600,
-                    child: Column(
-                      children: [
-                        PgButton(
-                          label: 'Get started',
+                        PgTextButton(
+                          label: 'Log in',
                           onPressed: () => _openLogin(context),
                         ),
-                        const SizedBox(height: 12),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Text(
-                              'Already have a Driver ID?',
-                              style: TextStyle(fontSize: 14, color: PG.body),
-                            ),
-                            TextButton(
-                              onPressed: () => _openLogin(context),
-                              style: TextButton.styleFrom(
-                                foregroundColor: PG.magenta,
-                                minimumSize: const Size(48, 48),
-                              ),
-                              child: const Text(
-                                'Log in',
-                                style: TextStyle(fontWeight: FontWeight.w700),
-                              ),
-                            ),
-                          ],
-                        ),
                       ],
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
+            ],
           ),
         ),
       ),
@@ -174,19 +129,19 @@ class _Feature extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.only(bottom: 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              color: PG.canvas,
+              borderRadius: BorderRadius.circular(PG.radius),
               border: Border.all(color: PG.border),
             ),
-            child: Icon(icon, size: 22, color: PG.magenta),
+            child: Icon(icon, size: 24, color: PG.magenta),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -197,7 +152,7 @@ class _Feature extends StatelessWidget {
                   title,
                   style: const TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w500,
                     color: PG.ink,
                   ),
                 ),
