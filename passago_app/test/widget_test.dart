@@ -6,7 +6,7 @@ void main() {
     await tester.pumpWidget(const PassaGoApp());
     await tester.pumpAndSettle();
 
-    expect(find.text('Drive with PassaGo'), findsOneWidget);
+    expect(find.textContaining('Ride Fair'), findsOneWidget);
     expect(find.text('Get started'), findsOneWidget);
   });
 }

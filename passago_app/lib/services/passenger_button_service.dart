@@ -1,7 +1,7 @@
 import 'dart:async';
 
 /// State of the link between the phone and the ESP32 push-button.
-enum ButtonConnection { disconnected, connecting, connected, reconnecting }
+enum ButtonConnection { disconnected, connecting, connected }
 
 /// One press of the physical button.
 ///
@@ -51,8 +51,6 @@ class SimulatedButtonService implements PassengerButtonService {
 
   ButtonConnection _current = ButtonConnection.disconnected;
   int _sequence = 0;
-  ButtonEvent? _lastEvent;
-  Timer? _reconnectTimer;
 
   /// Ids the app has acknowledged. Useful for checking behavior in tests.
   final Set<String> acknowledged = {};
@@ -66,17 +64,14 @@ class SimulatedButtonService implements PassengerButtonService {
   @override
   ButtonConnection get currentConnection => _current;
 
-  // Placeholder value. A real device reports its own battery.
+  // Placeholder value from the design. A real device reports its own battery.
   @override
   int? get batteryPercent =>
-      (_current == ButtonConnection.connected ||
-              _current == ButtonConnection.reconnecting)
-          ? 94
-          : null;
+      _current == ButtonConnection.connected ? 94 : null;
 
   void _setConnection(ButtonConnection value) {
     _current = value;
-    if (!_connection.isClosed) _connection.add(value);
+    _connection.add(value);
   }
 
   @override
@@ -92,21 +87,8 @@ class SimulatedButtonService implements PassengerButtonService {
 
   @override
   Future<void> disconnect() async {
-    _reconnectTimer?.cancel();
     if (_current == ButtonConnection.disconnected) return;
     _setConnection(ButtonConnection.disconnected);
-  }
-
-  /// Demo helper: the link drops, then comes back after a few seconds.
-  void dropConnection({Duration comeBackAfter = const Duration(seconds: 4)}) {
-    if (_current != ButtonConnection.connected) return;
-    _setConnection(ButtonConnection.reconnecting);
-    _reconnectTimer?.cancel();
-    _reconnectTimer = Timer(comeBackAfter, () {
-      if (_current == ButtonConnection.reconnecting) {
-        _setConnection(ButtonConnection.connected);
-      }
-    });
   }
 
   /// Pretend the driver pressed the physical button.
@@ -119,6 +101,8 @@ class SimulatedButtonService implements PassengerButtonService {
     _events.add(event);
     return true;
   }
+
+  ButtonEvent? _lastEvent;
 
   /// Pretend the device re-sent its last event (this happens after a
   /// Bluetooth reconnect). The app must count it only once.
@@ -136,7 +120,6 @@ class SimulatedButtonService implements PassengerButtonService {
 
   @override
   void dispose() {
-    _reconnectTimer?.cancel();
     _events.close();
     _connection.close();
   }
